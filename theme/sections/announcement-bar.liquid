@@ -1,0 +1,46 @@
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="announcement"
+    style="{% if section.settings.bg != blank %}background:{{ section.settings.bg }};{% endif %}{% if section.settings.fg != blank %}color:{{ section.settings.fg }};{% endif %}"
+    {% if section.blocks.size > 1 %}data-announcement data-rotating data-speed="{{ section.settings.speed }}"{% endif %}
+    {{ section.shopify_attributes }}
+  >
+    <div class="page-width announcement__track">
+      {%- for block in section.blocks -%}
+        <div class="announcement__item{% if forloop.first %} is-active{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+          {%- else -%}
+            {{ block.settings.text }}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Barra de anúncio",
+  "class": "section-announcement",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "color", "id": "bg", "label": "Fundo (vazio = cor primária)" },
+    { "type": "color", "id": "fg", "label": "Texto" },
+    { "type": "range", "id": "speed", "label": "Trocar a cada", "min": 3, "max": 10, "step": 1, "unit": "s", "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Mensagem",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Texto", "default": "Frete grátis acima de R$ 200" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Barra de anúncio", "blocks": [{ "type": "message" }] }
+  ]
+}
+{% endschema %}

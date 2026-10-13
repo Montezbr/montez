@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": { "type": "title", "settings": {} },
+        "rating": { "type": "rating", "settings": {} },
+        "description": { "type": "description", "settings": {} },
+        "price": { "type": "price", "settings": {} },
+        "variant_picker": { "type": "variant_picker", "settings": {} },
+        "sizes": { "type": "siblings", "settings": { "heading": "Outros tamanhos", "metafield": "custom.outros_tamanhos", "style": "pills" } },
+        "flavors": { "type": "siblings", "settings": { "heading": "Outros sabores", "metafield": "custom.outros_sabores", "style": "images" } },
+        "buy_buttons": { "type": "buy_buttons", "settings": { "label": "Adicionar", "show_quantity": true } },
+        "cashback": { "type": "cashback", "settings": { "percent": 10 } },
+        "upsell": { "type": "upsell", "settings": { "heading": "Leve junto", "metafield": "custom.leve_junto", "limit": 2 } },
+        "trust": { "type": "trust", "settings": {} },
+        "tab-1": { "type": "collapsible", "settings": { "heading": "Tabela nutricional", "metafield": "custom.tabela_nutricional" } },
+        "tab-2": { "type": "collapsible", "settings": { "heading": "Ingredientes", "metafield": "custom.ingredientes" } },
+        "hl-1": { "type": "highlight", "settings": { "value": "14g", "label": "Proteína" } },
+        "hl-2": { "type": "highlight", "settings": { "value": "0", "label": "Açúcar adicionado" } },
+        "hl-3": { "type": "highlight", "settings": { "value": "12", "label": "Unidades" } }
+      },
+      "block_order": ["title", "rating", "description", "price", "variant_picker", "sizes", "flavors", "buy_buttons", "cashback", "upsell", "trust", "tab-1", "tab-2", "hl-1", "hl-2", "hl-3"],
+      "settings": { "sticky_cta": true }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {}
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q-1": { "type": "question", "settings": { "question": "Qual o prazo de entrega?", "answer": "<p>Enviamos em até 2 dias úteis. O prazo final depende do CEP e aparece no checkout.</p>" } },
+        "q-2": { "type": "question", "settings": { "question": "Posso trocar o produto?", "answer": "<p>Sim. Você tem até 7 dias após o recebimento para solicitar a troca.</p>" } }
+      },
+      "block_order": ["q-1", "q-2"],
+      "settings": {}
+    }
+  },
+  "order": ["main", "recommendations", "faq"]
+}

@@ -1,0 +1,40 @@
+{%- paginate search.results by 24 -%}
+  <div class="section page-width" style="--section-pt: 32px; --section-pb: 48px">
+    <div class="collection-hero">
+      <h1>Busca</h1>
+      <form action="{{ routes.search_url }}" method="get" role="search" class="header__search" style="display:flex;max-width:520px;margin:0 auto">
+        <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="O que você procura?" aria-label="Buscar" style="width:100%">
+        <input type="hidden" name="type" value="product">
+        <button type="submit" class="icon-button" aria-label="Buscar">{% render 'icon', name: 'search' %}</button>
+      </form>
+    </div>
+
+    {%- if search.performed -%}
+      <p class="text-muted" style="text-align:center">{{ search.results_count }} resultado(s) para “{{ search.terms | escape }}”</p>
+      {%- if search.results_count > 0 -%}
+        <ul class="product-grid" role="list">
+          {%- for item in search.results -%}
+            <li>
+              {%- if item.object_type == 'product' -%}
+                {% render 'product-card', product_card_product: item %}
+              {%- else -%}
+                <a href="{{ item.url }}" class="blog-card" style="grid-template-columns:1fr">
+                  <div class="blog-card__content"><h3 class="blog-card__title">{{ item.title }}</h3></div>
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <div class="empty-state"><p>Não encontramos nada. Tente outro termo.</p></div>
+      {%- endif -%}
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="Paginação">{{ paginate | default_pagination }}</nav>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{ "name": "Resultados da busca", "tag": "section", "settings": [] }
+{% endschema %}

@@ -1,0 +1,92 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Montez Base",
+    "theme_version": "1.0.0",
+    "theme_author": "Montez",
+    "theme_documentation_url": "https://github.com/Montezbr/montez",
+    "theme_support_url": "https://github.com/Montezbr/montez"
+  },
+  {
+    "name": "Cores",
+    "settings": [
+      { "type": "color", "id": "color_primary", "label": "Primária (marca, títulos)", "default": "#00A0B1" },
+      { "type": "color", "id": "color_secondary", "label": "Secundária (texto forte, rodapé)", "default": "#143740" },
+      { "type": "color", "id": "color_accent", "label": "Destaque (botões de compra)", "default": "#F1613B" },
+      { "type": "color", "id": "color_accent_text", "label": "Texto sobre o destaque", "default": "#FFFFFF" },
+      { "type": "color", "id": "color_success", "label": "Selos de economia", "default": "#7AA62B" },
+      { "type": "color", "id": "color_text", "label": "Texto", "default": "#232323" },
+      { "type": "color", "id": "color_text_muted", "label": "Texto secundário", "default": "#7A8586" },
+      { "type": "color", "id": "color_background", "label": "Fundo", "default": "#FFFFFF" },
+      { "type": "color", "id": "color_surface", "label": "Fundo de cards", "default": "#F2F6F7" },
+      { "type": "color", "id": "color_border", "label": "Bordas", "default": "#E3E8E9" }
+    ]
+  },
+  {
+    "name": "Tipografia",
+    "settings": [
+      { "type": "font_picker", "id": "type_heading_font", "label": "Fonte dos títulos", "default": "archivo_n9" },
+      { "type": "select", "id": "type_heading_case", "label": "Caixa dos títulos", "default": "uppercase",
+        "options": [
+          { "value": "none", "label": "Normal" },
+          { "value": "uppercase", "label": "Maiúsculas" }
+        ]
+      },
+      { "type": "range", "id": "type_heading_scale", "label": "Escala dos títulos", "min": 80, "max": 140, "step": 5, "unit": "%", "default": 100 },
+      { "type": "font_picker", "id": "type_body_font", "label": "Fonte do texto", "default": "archivo_n4" },
+      { "type": "range", "id": "type_body_size", "label": "Tamanho do texto", "min": 14, "max": 18, "step": 1, "unit": "px", "default": 16 }
+    ]
+  },
+  {
+    "name": "Layout e formas",
+    "settings": [
+      { "type": "range", "id": "page_width", "label": "Largura máxima", "min": 1000, "max": 1800, "step": 20, "unit": "px", "default": 1440 },
+      { "type": "range", "id": "radius_card", "label": "Arredondamento de cards", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 16 },
+      { "type": "range", "id": "radius_button", "label": "Arredondamento de botões", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 30 },
+      { "type": "checkbox", "id": "animations", "label": "Animar seções ao rolar", "default": true }
+    ]
+  },
+  {
+    "name": "Produtos e preços",
+    "settings": [
+      { "type": "range", "id": "installments", "label": "Parcelas sem juros", "min": 1, "max": 12, "step": 1, "default": 3, "info": "Use 1 para esconder o parcelamento." },
+      { "type": "range", "id": "installment_min", "label": "Valor mínimo da parcela", "min": 0, "max": 100, "step": 5, "unit": "R$", "default": 10 },
+      { "type": "checkbox", "id": "show_savings_badge", "label": "Mostrar selo \"Economize R$\" nos cards", "default": true },
+      { "type": "range", "id": "cashback_percent", "label": "Cashback exibido", "min": 0, "max": 30, "step": 1, "unit": "%", "default": 10, "info": "Só exibe o valor. O cashback real depende de um app de fidelidade. Use 0 para esconder." },
+      { "type": "select", "id": "card_image_ratio", "label": "Proporção das imagens dos cards", "default": "square",
+        "options": [
+          { "value": "square", "label": "Quadrada" },
+          { "value": "portrait", "label": "Retrato" }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Carrinho",
+    "settings": [
+      { "type": "select", "id": "cart_type", "label": "Tipo de carrinho", "default": "drawer",
+        "options": [
+          { "value": "drawer", "label": "Lateral" },
+          { "value": "page", "label": "Página" }
+        ]
+      },
+      { "type": "range", "id": "free_shipping_threshold", "label": "Frete grátis a partir de", "min": 0, "max": 500, "step": 10, "unit": "R$", "default": 200, "info": "Use 0 para esconder a barra de frete grátis." },
+      { "type": "text", "id": "cart_note_text", "label": "Texto de garantia no carrinho", "default": "Compra 100% segura · Troca fácil" }
+    ]
+  },
+  {
+    "name": "Redes sociais",
+    "settings": [
+      { "type": "text", "id": "social_instagram", "label": "Instagram (URL)" },
+      { "type": "text", "id": "social_tiktok", "label": "TikTok (URL)" },
+      { "type": "text", "id": "social_youtube", "label": "YouTube (URL)" },
+      { "type": "text", "id": "social_whatsapp", "label": "WhatsApp (número com DDI)", "info": "Ex.: 5511999999999" }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      { "type": "image_picker", "id": "favicon", "label": "Favicon" }
+    ]
+  }
+]

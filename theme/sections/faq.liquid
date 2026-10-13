@@ -1,0 +1,72 @@
+<div class="section{% if section.settings.surface %} section--surface{% endif %}" style="--section-pt: {{ section.settings.pt }}px; --section-pb: {{ section.settings.pb }}px">
+  <div class="page-width">
+    <div class="faq">
+      {%- if section.settings.heading != blank -%}
+        <div class="section-header"><h2>{{ section.settings.heading }}</h2></div>
+      {%- endif -%}
+      <div {% if section.settings.single_open %}data-accordion-single{% endif %}>
+        {%- for block in section.blocks -%}
+          <details class="faq__item" {{ block.shopify_attributes }}>
+            <summary>{{ block.settings.question }}</summary>
+            <div class="faq__answer rte">{{ block.settings.answer }}</div>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- if section.settings.schema_markup and section.blocks.size > 0 -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {%- for block in section.blocks -%}
+          {
+            "@type": "Question",
+            "name": {{ block.settings.question | json }},
+            "acceptedAnswer": { "@type": "Answer", "text": {{ block.settings.answer | strip_html | json }} }
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Perguntas frequentes",
+  "tag": "section",
+  "class": "section-faq",
+  "max_blocks": 20,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Título", "default": "Perguntas frequentes" },
+    { "type": "checkbox", "id": "single_open", "label": "Abrir uma pergunta por vez", "default": true },
+    { "type": "checkbox", "id": "schema_markup", "label": "Marcação de FAQ para o Google", "default": true, "info": "Ajuda o Google a mostrar as perguntas nos resultados de busca." },
+    { "type": "checkbox", "id": "surface", "label": "Fundo colorido", "default": false },
+    { "type": "range", "id": "pt", "label": "Espaço acima", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "pb", "label": "Espaço abaixo", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Pergunta",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Pergunta", "default": "Qual o prazo de entrega?" },
+        { "type": "richtext", "id": "answer", "label": "Resposta", "default": "<p>Enviamos em até 2 dias úteis. O prazo final depende do CEP e aparece no checkout.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Perguntas frequentes",
+      "blocks": [
+        { "type": "question" },
+        { "type": "question", "settings": { "question": "Posso trocar o produto?", "answer": "<p>Sim. Você tem até 7 dias após o recebimento para solicitar a troca.</p>" } },
+        { "type": "question", "settings": { "question": "Quais as formas de pagamento?", "answer": "<p>Pix, cartão de crédito em até 3x sem juros e boleto.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

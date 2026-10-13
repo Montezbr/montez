@@ -1,0 +1,139 @@
+{%- liquid
+  assign menu = section.settings.menu
+-%}
+<div class="header-wrapper{% if section.settings.sticky %} header-wrapper--sticky{% endif %}">
+  <header class="page-width header" style="--logo-width: {{ section.settings.logo_width }}px">
+    <div style="display:flex;align-items:center;gap:1.75rem">
+      <button type="button" class="icon-button header__menu-toggle" data-drawer-open="MenuDrawer" aria-label="Abrir menu">
+        {% render 'icon', name: 'menu' %}
+      </button>
+
+      {%- if request.page_type == 'index' -%}<h1 class="header__logo" style="margin:0">{%- else -%}<div class="header__logo">{%- endif -%}
+        <a href="{{ routes.root_url }}">
+          {%- if section.settings.logo != blank -%}
+            {{ section.settings.logo | image_url: width: 400 | image_tag:
+              widths: '150, 250, 400',
+              sizes: '200px',
+              alt: shop.name,
+              loading: 'eager'
+            }}
+          {%- else -%}
+            <span class="header__logo-text">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      {%- if request.page_type == 'index' -%}</h1>{%- else -%}</div>{%- endif -%}
+
+      {%- if menu != blank -%}
+        <nav class="header__nav" aria-label="Principal">
+          <ul role="list">
+            {%- for link in menu.links -%}
+              <li>
+                <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>{{ link.title }}</a>
+                {%- if link.links.size > 0 -%}
+                  <div class="header__submenu">
+                    <ul role="list">
+                      {%- for child in link.links -%}
+                        <li><a href="{{ child.url }}">{{ child.title }}</a></li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+    </div>
+
+    <div></div>
+
+    <div class="header__actions">
+      {%- if section.settings.pill_text != blank -%}
+        <a href="{{ section.settings.pill_link | default: '#' }}" class="header__pill" style="--pill-bg: {{ section.settings.pill_color }}">
+          {%- render 'icon', name: 'gift' -%} {{ section.settings.pill_text }}
+        </a>
+      {%- endif -%}
+
+      {%- if section.settings.show_search -%}
+        <form action="{{ routes.search_url }}" method="get" role="search" class="header__search">
+          <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ section.settings.search_placeholder }}" aria-label="Buscar">
+          <input type="hidden" name="type" value="product">
+          <button type="submit" class="icon-button" aria-label="Buscar">{% render 'icon', name: 'search' %}</button>
+        </form>
+      {%- endif -%}
+
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="icon-button" aria-label="Minha conta">{% render 'icon', name: 'account' %}</a>
+      {%- endif -%}
+
+      <a href="{{ routes.cart_url }}" class="icon-button" data-drawer-open="CartDrawer" aria-label="Carrinho">
+        {% render 'icon', name: 'cart' %}
+        <span class="cart-count" data-cart-count data-count="{{ cart.item_count }}">{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </header>
+</div>
+
+<div id="MenuDrawer" class="drawer drawer--left" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+  <button type="button" class="drawer__overlay" data-drawer-close aria-label="Fechar menu" tabindex="-1"></button>
+  <div class="drawer__panel">
+    <div class="drawer__header">
+      <span class="header__logo-text" style="font-size:1.2rem">{{ shop.name }}</span>
+      <button type="button" class="icon-button" data-drawer-close aria-label="Fechar">{% render 'icon', name: 'close' %}</button>
+    </div>
+    <div class="drawer__body">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="header__search" style="display:flex;margin-bottom:1rem">
+        <input type="search" name="q" placeholder="{{ section.settings.search_placeholder }}" aria-label="Buscar" style="width:100%">
+        <button type="submit" class="icon-button" aria-label="Buscar">{% render 'icon', name: 'search' %}</button>
+      </form>
+      {%- if menu != blank -%}
+        <nav class="mobile-nav" aria-label="Menu mobile">
+          {%- for link in menu.links -%}
+            {%- if link.links.size > 0 -%}
+              <details>
+                <summary>{{ link.title }} {% render 'icon', name: 'chevron-down' %}</summary>
+                <ul role="list">
+                  <li><a href="{{ link.url }}">Ver tudo</a></li>
+                  {%- for child in link.links -%}
+                    <li><a href="{{ child.url }}">{{ child.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a href="{{ link.url }}">{{ link.title }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+      {%- if section.settings.pill_text != blank -%}
+        <a href="{{ section.settings.pill_link | default: '#' }}" class="header__pill" style="--pill-bg: {{ section.settings.pill_color }};display:inline-flex;margin-top:1.25rem">
+          {%- render 'icon', name: 'gift' -%} {{ section.settings.pill_text }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .header__pill svg, .mobile-nav svg { width: 1rem; height: 1rem; }
+</style>
+
+{% schema %}
+{
+  "name": "Cabeçalho",
+  "class": "section-header",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    { "type": "range", "id": "logo_width", "label": "Largura do logo", "min": 60, "max": 260, "step": 5, "unit": "px", "default": 110 },
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "sticky", "label": "Fixar no topo ao rolar", "default": true },
+    { "type": "checkbox", "id": "show_search", "label": "Mostrar busca", "default": true },
+    { "type": "text", "id": "search_placeholder", "label": "Texto da busca", "default": "O que você procura?" },
+    { "type": "header", "content": "Botão de destaque" },
+    { "type": "paragraph", "content": "Ideal para clube de fidelidade, assinatura ou promoção." },
+    { "type": "text", "id": "pill_text", "label": "Texto", "default": "Club" },
+    { "type": "url", "id": "pill_link", "label": "Link" },
+    { "type": "color", "id": "pill_color", "label": "Cor", "default": "#D9A15B" }
+  ]
+}
+{% endschema %}

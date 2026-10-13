@@ -1,0 +1,102 @@
+{%- liquid
+  assign link_blocks = section.blocks | where: 'type', 'links'
+-%}
+<footer class="footer">
+  <div class="page-width">
+    <div class="footer__grid" style="--cols: {{ link_blocks.size | at_least: 1 }}">
+      <div class="footer__about">
+        {%- if section.settings.logo != blank -%}
+          {{ section.settings.logo | image_url: width: 300 | image_tag: loading: 'lazy', alt: shop.name, style: 'width: 120px; margin-bottom: 1rem' }}
+        {%- else -%}
+          <p class="header__logo-text" style="color:#fff">{{ shop.name }}</p>
+        {%- endif -%}
+        {%- if section.settings.about != blank -%}
+          <div class="rte">{{ section.settings.about }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.show_newsletter -%}
+          {%- form 'customer', class: 'newsletter-form', style: 'margin-top: 1.25rem' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input type="email" name="contact[email]" placeholder="Seu melhor e-mail" required aria-label="E-mail">
+            <button type="submit" class="button button--small">Assinar</button>
+            {%- if form.posted_successfully? -%}
+              <p style="width:100%;margin:.5rem 0 0">Inscrição feita. Obrigado!</p>
+            {%- endif -%}
+          {%- endform -%}
+        {%- endif -%}
+
+        <div class="footer__social">
+          {%- if settings.social_instagram != blank -%}<a href="{{ settings.social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram">{% render 'icon', name: 'instagram' %}</a>{%- endif -%}
+          {%- if settings.social_tiktok != blank -%}<a href="{{ settings.social_tiktok }}" target="_blank" rel="noopener" aria-label="TikTok">{% render 'icon', name: 'tiktok' %}</a>{%- endif -%}
+          {%- if settings.social_youtube != blank -%}<a href="{{ settings.social_youtube }}" target="_blank" rel="noopener" aria-label="YouTube">{% render 'icon', name: 'youtube' %}</a>{%- endif -%}
+          {%- if settings.social_whatsapp != blank -%}<a href="https://wa.me/{{ settings.social_whatsapp | remove: '+' | remove: ' ' }}" target="_blank" rel="noopener" aria-label="WhatsApp">{% render 'icon', name: 'whatsapp' %}</a>{%- endif -%}
+        </div>
+      </div>
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'links' -%}
+            <div {{ block.shopify_attributes }}>
+              <h2 class="footer__heading">{{ block.settings.heading | default: block.settings.menu.title }}</h2>
+              {%- if block.settings.menu != blank -%}
+                <ul class="footer__links" role="list">
+                  {%- for link in block.settings.menu.links -%}
+                    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          {%- when 'text' -%}
+            <div {{ block.shopify_attributes }}>
+              <h2 class="footer__heading">{{ block.settings.heading }}</h2>
+              <div class="rte">{{ block.settings.text }}</div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}{% if section.settings.legal != blank %} · {{ section.settings.legal }}{% endif %}</span>
+      {%- if section.settings.show_payments -%}
+        <div class="footer__payments" aria-label="Formas de pagamento">
+          {%- for type in shop.enabled_payment_types -%}
+            {{ type | payment_type_svg_tag }}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Rodapé",
+  "class": "section-footer",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo (versão clara)" },
+    { "type": "richtext", "id": "about", "label": "Sobre a marca", "default": "<p>Conte em uma frase o que a sua marca faz de diferente.</p>" },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Mostrar newsletter", "default": true },
+    { "type": "checkbox", "id": "show_payments", "label": "Mostrar formas de pagamento", "default": true },
+    { "type": "text", "id": "legal", "label": "Texto legal (CNPJ, endereço)" }
+  ],
+  "blocks": [
+    {
+      "type": "links",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "Atendimento" },
+        { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Seg a sex, 9h às 18h</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+<div class="section page-width" style="--section-pt: 32px; --section-pb: 48px">
+  <div class="collection-hero"><h1>Coleções</h1></div>
+  <ul class="product-grid" role="list">
+    {%- for collection in collections -%}
+      {%- unless collection.handle == 'frontpage' -%}
+        <li>
+          <a href="{{ collection.url }}" class="category-tile">
+            <span class="category-tile__media">
+              {%- if collection.featured_image -%}
+                {{ collection.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', alt: collection.title }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </span>
+            <span class="category-tile__label">{{ collection.title }}</span>
+          </a>
+        </li>
+      {%- endunless -%}
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{ "name": "Lista de coleções", "tag": "section", "settings": [] }
+{% endschema %}

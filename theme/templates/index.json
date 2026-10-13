@@ -1,0 +1,208 @@
+{
+  "sections": {
+    "slideshow": {
+      "type": "slideshow",
+      "blocks": {
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "heading": "Até 40% off",
+            "text": "Aproveite as ofertas da semana.",
+            "button_label": "Comprar agora",
+            "link": "shopify://collections/all"
+          }
+        },
+        "slide-2": {
+          "type": "slide",
+          "settings": {
+            "heading": "Novidades",
+            "text": "Conheça os lançamentos.",
+            "button_label": "Ver lançamentos",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "slide-1",
+        "slide-2"
+      ],
+      "settings": {}
+    },
+    "categories": {
+      "type": "category-shortcuts",
+      "blocks": {
+        "cat-1": {
+          "type": "category",
+          "settings": {
+            "label": "Linha 1"
+          }
+        },
+        "cat-2": {
+          "type": "category",
+          "settings": {
+            "label": "Linha 2"
+          }
+        },
+        "cat-3": {
+          "type": "category",
+          "settings": {
+            "label": "Linha 3"
+          }
+        },
+        "cat-4": {
+          "type": "category",
+          "settings": {
+            "label": "Linha 4"
+          }
+        },
+        "cat-5": {
+          "type": "category",
+          "settings": {
+            "label": "Linha 5"
+          }
+        },
+        "cat-6": {
+          "type": "category",
+          "settings": {
+            "label": "Combos"
+          }
+        }
+      },
+      "block_order": [
+        "cat-1",
+        "cat-2",
+        "cat-3",
+        "cat-4",
+        "cat-5",
+        "cat-6"
+      ],
+      "settings": {}
+    },
+    "featured-1": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Mais vendidos",
+        "subheading": "Os favoritos dos nossos clientes."
+      }
+    },
+    "featured-2": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Lançamentos",
+        "subheading": "Acabaram de chegar."
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "blocks": {
+        "item-1": {
+          "type": "item",
+          "settings": {
+            "text": "<strong>Frete grátis</strong> acima de R$ 200",
+            "icon": "truck"
+          }
+        },
+        "item-2": {
+          "type": "item",
+          "settings": {
+            "text": "<strong>10% de cashback</strong> para a próxima compra",
+            "icon": "coin"
+          }
+        },
+        "item-3": {
+          "type": "item",
+          "settings": {
+            "text": "<strong>Troca fácil</strong> em até 7 dias",
+            "icon": "refresh"
+          }
+        }
+      },
+      "block_order": [
+        "item-1",
+        "item-2",
+        "item-3"
+      ],
+      "settings": {}
+    },
+    "featured-3": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Kits e combos",
+        "subheading": "Mais produto, menos preço."
+      }
+    },
+    "launch": {
+      "type": "product-launch",
+      "blocks": {
+        "v-1": {
+          "type": "version",
+          "settings": {
+            "label": "Versão 1",
+            "sublabel": "a clássica"
+          }
+        },
+        "v-2": {
+          "type": "version",
+          "settings": {
+            "label": "Versão 2",
+            "sublabel": "a intensa"
+          }
+        }
+      },
+      "block_order": [
+        "v-1",
+        "v-2"
+      ],
+      "settings": {}
+    },
+    "blog": {
+      "type": "blog-carousel",
+      "settings": {
+        "blog": "news"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q-1": {
+          "type": "question",
+          "settings": {
+            "question": "Qual o prazo de entrega?",
+            "answer": "<p>Enviamos em até 2 dias úteis. O prazo final depende do CEP e aparece no checkout.</p>"
+          }
+        },
+        "q-2": {
+          "type": "question",
+          "settings": {
+            "question": "Posso trocar o produto?",
+            "answer": "<p>Sim. Você tem até 7 dias após o recebimento para solicitar a troca.</p>"
+          }
+        },
+        "q-3": {
+          "type": "question",
+          "settings": {
+            "question": "Quais as formas de pagamento?",
+            "answer": "<p>Pix, cartão de crédito em até 3x sem juros e boleto.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q-1",
+        "q-2",
+        "q-3"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "slideshow",
+    "categories",
+    "featured-1",
+    "featured-2",
+    "marquee",
+    "featured-3",
+    "launch",
+    "blog",
+    "faq"
+  ]
+}

@@ -1,0 +1,50 @@
+{%- comment -%}
+  Lista de itens do carrinho (usada na gaveta e na página do carrinho).
+  Propriedades que começam com "_" ficam ocultas (ex.: dados de kits).
+{%- endcomment -%}
+<ul class="cart-items" role="list">
+  {%- for item in cart.items -%}
+    <li class="cart-item">
+      <a href="{{ item.url }}" class="cart-item__media">
+        {%- if item.image -%}
+          {{ item.image | image_url: width: 200 | image_tag: loading: 'lazy', alt: item.image.alt | default: item.product.title }}
+        {%- endif -%}
+      </a>
+      <div>
+        <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
+        {%- unless item.product.has_only_default_variant -%}
+          <p class="cart-item__variant">{{ item.variant.title }}</p>
+        {%- endunless -%}
+        {%- if item.properties.size > 0 -%}
+          <p class="cart-item__props">
+            {%- for prop in item.properties -%}
+              {%- assign first_char = prop.first | slice: 0 -%}
+              {%- if prop.last != blank and first_char != '_' -%}
+                {{ prop.first }}: {{ prop.last }}<br>
+              {%- endif -%}
+            {%- endfor -%}
+          </p>
+        {%- endif -%}
+        {%- if item.selling_plan_allocation -%}
+          <p class="cart-item__props">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+        {%- endif -%}
+        <div class="quantity quantity--small">
+          <button type="button" data-qty-step="-1" aria-label="Diminuir quantidade">–</button>
+          <input type="number" min="0" value="{{ item.quantity }}" data-cart-qty="{{ forloop.index }}" aria-label="Quantidade de {{ item.product.title | escape }}">
+          <button type="button" data-qty-step="1" aria-label="Aumentar quantidade">+</button>
+        </div>
+        <br>
+        <button type="button" class="cart-item__remove" data-cart-remove="{{ forloop.index }}">Remover</button>
+      </div>
+      <div class="cart-item__price">
+        {%- if item.original_line_price > item.final_line_price -%}
+          <s>{{ item.original_line_price | money }}</s>
+        {%- endif -%}
+        {{ item.final_line_price | money }}
+        {%- for discount in item.line_level_discount_allocations -%}
+          <p class="cart-item__props">{{ discount.discount_application.title }}</p>
+        {%- endfor -%}
+      </div>
+    </li>
+  {%- endfor -%}
+</ul>

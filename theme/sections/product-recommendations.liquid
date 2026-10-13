@@ -1,0 +1,64 @@
+{%- comment -%}
+  Recomendações automáticas do Shopify (Search & Discovery).
+  Renderizada no servidor via ?section_id=…&product_id=… pelo próprio Shopify.
+{%- endcomment -%}
+<div class="section{% if section.settings.surface %} section--surface{% endif %}" style="--section-pt: {{ section.settings.pt }}px; --section-pb: {{ section.settings.pb }}px">
+  <div class="page-width">
+    {%- if recommendations.performed? and recommendations.products_count > 0 -%}
+      <div class="section-header"><h2>{{ section.settings.heading }}</h2></div>
+      <div class="carousel" data-carousel>
+        <ul class="carousel__track" role="list" style="--per-row: 4; --per-row-mobile: 1.6" data-carousel-track>
+          {%- for product in recommendations.products -%}
+            <li>{% render 'product-card', product_card_product: product %}</li>
+          {%- endfor -%}
+        </ul>
+        <button type="button" class="carousel__nav carousel__nav--prev" data-carousel-prev aria-label="Anterior">{% render 'icon', name: 'arrow-left' %}</button>
+        <button type="button" class="carousel__nav carousel__nav--next" data-carousel-next aria-label="Próximo">{% render 'icon', name: 'arrow-right' %}</button>
+      </div>
+    {%- else -%}
+      <div data-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent={{ section.settings.intent }}"></div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  (() => {
+    const holder = document.querySelector('#shopify-section-{{ section.id }} [data-recommendations]');
+    if (!holder) return;
+    const load = () => fetch(holder.dataset.url)
+      .then((r) => r.text())
+      .then((html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const fresh = doc.querySelector('#shopify-section-{{ section.id }}');
+        const target = document.getElementById('shopify-section-{{ section.id }}');
+        if (fresh && target) {
+          target.innerHTML = fresh.innerHTML;
+          target.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true }));
+        }
+      })
+      .catch(() => {});
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { io.disconnect(); load(); } }, { rootMargin: '400px' });
+      io.observe(holder);
+    } else {
+      load();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Recomendações",
+  "tag": "section",
+  "class": "section-recommendations",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Título", "default": "Você também vai gostar" },
+    { "type": "select", "id": "intent", "label": "Tipo", "default": "related", "options": [ { "value": "related", "label": "Relacionados" }, { "value": "complementary", "label": "Complementares" } ] },
+    { "type": "range", "id": "limit", "label": "Quantidade", "min": 2, "max": 10, "step": 1, "default": 8 },
+    { "type": "checkbox", "id": "surface", "label": "Fundo colorido", "default": false },
+    { "type": "range", "id": "pt", "label": "Espaço acima", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 },
+    { "type": "range", "id": "pb", "label": "Espaço abaixo", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 48 }
+  ],
+  "presets": [ { "name": "Recomendações" } ]
+}
+{% endschema %}

@@ -1,0 +1,58 @@
+{%- comment -%}
+  Preço com preço "de", parcelamento e selo de economia.
+  - product (obrigatório) ou variant
+  - variant: variante específica (opcional)
+  - size: 'large' para a página de produto
+  - dynamic: true para atualizar via JS ao trocar de variante
+  - show_installments: padrão true
+{%- endcomment -%}
+{%- liquid
+  assign use_range = false
+  if variant == blank and product.price_varies and dynamic != true
+    assign use_range = true
+  endif
+  if use_range
+    assign price = product.price_min
+    assign compare_at = product.compare_at_price_min
+  else
+    assign target = variant | default: product.selected_or_first_available_variant
+    assign price = target.price
+    assign compare_at = target.compare_at_price
+  endif
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+
+  assign inst_n = 0
+  assign inst_per = 0
+  assign max_installments = settings.installments
+  assign min_cents = settings.installment_min | times: 100
+  if max_installments > 1 and show_installments != false
+    for i in (1..max_installments)
+      assign n = max_installments | minus: i | plus: 1
+      assign per = price | divided_by: n
+      if n > 1 and per >= min_cents
+        assign inst_n = n
+        assign inst_per = per
+        break
+      endif
+    endfor
+  endif
+-%}
+<div class="price{% if size == 'large' %} price--large{% endif %}">
+  {%- if on_sale or dynamic -%}
+    <s class="price__compare" {% if dynamic %}data-price-compare{% endif %} {% unless on_sale %}hidden{% endunless %}>
+      {%- if on_sale -%}{{ compare_at | money }}{%- endif -%}
+    </s>
+  {%- endif -%}
+  <span class="price__current" {% if dynamic %}data-price-current{% endif %}>
+    {%- if use_range -%}a partir de {% endif -%}
+    {{ price | money }}
+  </span>
+  {%- if inst_n > 1 or dynamic -%}
+    <span class="price__installments" {% if dynamic %}data-price-installments{% endif %}>
+      {%- if inst_n > 1 -%}{{ inst_n }}x de {{ inst_per | money }} sem juros{%- endif -%}
+    </span>
+  {%- endif -%}
+</div>

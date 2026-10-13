@@ -1,0 +1,18 @@
+{
+  "accessibility": {
+    "skip_to_content": "Pular para o conteúdo"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Adicionar",
+      "sold_out": "Esgotado",
+      "unavailable": "Indisponível",
+      "adding": "Adicionando..."
+    }
+  },
+  "cart": {
+    "general": {
+      "error": "Não foi possível atualizar o carrinho. Tente de novo."
+    }
+  }
+}

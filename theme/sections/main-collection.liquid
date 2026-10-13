@@ -1,0 +1,64 @@
+{%- paginate collection.products by section.settings.per_page -%}
+  <div class="section page-width" style="--section-pt: 32px; --section-pb: 48px">
+    <div class="collection-hero">
+      <h1>{{ collection.title }}</h1>
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <div class="collection-hero__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="collection-toolbar">
+      <span>{{ collection.products_count }} {% if collection.products_count == 1 %}produto{% else %}produtos{% endif %}</span>
+      {%- if section.settings.show_sort -%}
+        <label>
+          <span class="visually-hidden">Ordenar por</span>
+          <select data-sort-by>
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value | escape }}" {% if option.value == collection.sort_by %}selected{% endif %}>{{ option.name | escape }}</option>
+            {%- endfor -%}
+          </select>
+        </label>
+      {%- endif -%}
+    </div>
+
+    {%- if collection.products.size > 0 -%}
+      <ul class="product-grid" role="list" style="--per-row: {{ section.settings.per_row }}">
+        {%- for product in collection.products -%}
+          <li>{% render 'product-card', product_card_product: product %}</li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="empty-state"><p>Nenhum produto nesta coleção ainda.</p></div>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="pagination" aria-label="Paginação">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" aria-label="Página anterior">‹</a>{%- endif -%}
+        {%- for part in paginate.parts -%}
+          {%- if part.is_link -%}
+            <a href="{{ part.url }}">{{ part.title }}</a>
+          {%- elsif part.title == paginate.current_page -%}
+            <span class="current" aria-current="page">{{ part.title }}</span>
+          {%- else -%}
+            <span>{{ part.title }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}" aria-label="Próxima página">›</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Coleção",
+  "tag": "section",
+  "class": "section-main-collection",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Produtos por página", "min": 8, "max": 48, "step": 4, "default": 24 },
+    { "type": "range", "id": "per_row", "label": "Por linha (desktop)", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_description", "label": "Mostrar descrição", "default": true },
+    { "type": "checkbox", "id": "show_sort", "label": "Mostrar ordenação", "default": true }
+  ]
+}
+{% endschema %}

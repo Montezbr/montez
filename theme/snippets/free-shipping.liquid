@@ -1,0 +1,24 @@
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | times: 100
+  if threshold > 0
+    assign remaining = threshold | minus: cart.total_price
+    assign progress = cart.total_price | times: 100 | divided_by: threshold
+    if progress > 100
+      assign progress = 100
+    endif
+  endif
+-%}
+{%- if threshold > 0 -%}
+  <div class="free-shipping">
+    <p>
+      {%- if remaining > 0 -%}
+        Faltam <strong>{{ remaining | money }}</strong> para ganhar <strong>frete grátis</strong>
+      {%- else -%}
+        Você ganhou <strong>frete grátis</strong>! 🎉
+      {%- endif -%}
+    </p>
+    <div class="free-shipping__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+      <div class="free-shipping__fill" style="--progress: {{ progress }}%"></div>
+    </div>
+  </div>
+{%- endif -%}

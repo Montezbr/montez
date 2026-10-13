@@ -1,0 +1,387 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign form_id = 'ProductForm-' | append: section.id
+  assign buy_id = 'BuyButtons-' | append: section.id
+  assign highlight_blocks = section.blocks | where: 'type', 'highlight'
+-%}
+<div class="section page-width" data-product-section style="--section-pt: 32px; --section-pb: 48px">
+  <div class="product">
+    {%- comment -%} ===== Coluna de mídia ===== {%- endcomment -%}
+    <div class="product__media-wrapper">
+      <div data-gallery>
+        <div class="gallery__main" data-gallery-main>
+          {%- for media in product.media -%}
+            <div class="gallery__slide" data-media-id="{{ media.id }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  {%- liquid
+                    assign loading = 'lazy'
+                    if forloop.first
+                      assign loading = 'eager'
+                    endif
+                  -%}
+                  {{ media | image_url: width: 1400 | image_tag:
+                    loading: loading,
+                    widths: '500, 750, 1000, 1400',
+                    sizes: '(min-width: 990px) 50vw, 100vw',
+                    alt: media.alt | default: product.title
+                  }}
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, preload: 'none', image_size: '1000x' }}
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag }}
+                {%- else -%}
+                  {{ media | media_tag }}
+              {%- endcase -%}
+            </div>
+          {%- else -%}
+            <div class="gallery__slide">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+          {%- endfor -%}
+        </div>
+        {%- if product.media.size > 1 -%}
+          <div class="gallery__thumbs">
+            {%- for media in product.media -%}
+              <button type="button" class="gallery__thumb" data-gallery-thumb aria-label="Ver imagem {{ forloop.index }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+                {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if highlight_blocks.size > 0 -%}
+        <div class="highlights" style="--count: {{ highlight_blocks.size | at_most: 4 }}">
+          {%- for block in highlight_blocks -%}
+            <div class="highlight" {{ block.shopify_attributes }}>
+              <strong>{{ block.settings.value }}</strong>
+              <span>{{ block.settings.label }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ===== Coluna de informações ===== {%- endcomment -%}
+    <div class="product__info">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'title' -%}
+            <h1 class="product__title h2" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+
+          {%- when 'rating' -%}
+            {%- assign rating = product.metafields.reviews.rating.value -%}
+            {%- if rating != blank -%}
+              <div style="display:flex;align-items:center;gap:.4rem;color:var(--color-accent)" {{ block.shopify_attributes }}>
+                {%- assign rounded = rating.rating | round -%}
+                {%- for i in (1..5) -%}
+                  <span style="width:1rem;height:1rem;{% if i > rounded %}opacity:.25{% endif %}">{% render 'icon', name: 'star' %}</span>
+                {%- endfor -%}
+                <span class="text-muted" style="font-size:.85rem">{{ rating.rating | round: 1 }} ({{ product.metafields.reviews.rating_count }})</span>
+              </div>
+            {%- endif -%}
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <div class="product__description rte" {{ block.shopify_attributes }}>{{ product.description }}</div>
+            {%- endif -%}
+
+          {%- when 'text' -%}
+            <div class="rte" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+
+          {%- when 'price' -%}
+            <div {{ block.shopify_attributes }}>
+              {% render 'price', product: product, variant: current_variant, size: 'large', dynamic: true %}
+            </div>
+
+          {%- when 'variant_picker' -%}
+            {%- unless product.has_only_default_variant -%}
+              <div data-variant-picker {{ block.shopify_attributes }}>
+                {%- for option in product.options_with_values -%}
+                  <fieldset data-option-index="{{ forloop.index0 }}" style="border:0;padding:0;margin:0 0 1rem">
+                    <legend class="product__label">{{ option.name }}</legend>
+                    <div class="option-pills">
+                      {%- for value in option.values -%}
+                        <label class="option-pill">
+                          <input type="radio" name="option-{{ section.id }}-{{ forloop.parentloop.index0 }}" value="{{ value | escape }}" {% if option.selected_value == value %}checked{% endif %}>
+                          {{ value }}
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </fieldset>
+                {%- endfor -%}
+                <script type="application/json">{{ product.variants | json }}</script>
+              </div>
+            {%- endunless -%}
+
+          {%- when 'siblings' -%}
+            {%- liquid
+              assign ns = block.settings.metafield | split: '.' | first
+              assign key = block.settings.metafield | split: '.' | last
+              assign siblings = product.metafields[ns][key].value
+            -%}
+            {%- if siblings != blank and siblings.size > 0 -%}
+              <div {{ block.shopify_attributes }}>
+                <p class="product__label">{{ block.settings.heading }}</p>
+                {%- if block.settings.style == 'pills' -%}
+                  <div class="option-pills">
+                    {%- for sibling in siblings -%}
+                      {%- assign label = sibling.metafields.custom.rotulo_variacao.value | default: sibling.title -%}
+                      <a href="{{ sibling.url }}" class="option-pill{% if sibling.id == product.id %} is-active{% endif %}">{{ label }}</a>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <div class="siblings-grid">
+                    {%- for sibling in siblings -%}
+                      {%- assign label = sibling.metafields.custom.rotulo_variacao.value | default: sibling.title -%}
+                      <a href="{{ sibling.url }}" class="sibling{% if sibling.id == product.id %} is-active{% endif %}" title="{{ sibling.title | escape }}">
+                        <span class="sibling__media">
+                          {%- if sibling.featured_media -%}
+                            {{ sibling.featured_media | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}
+                          {%- endif -%}
+                        </span>
+                        <span class="sibling__label">{{ label }}</span>
+                      </a>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+          {%- when 'buy_buttons' -%}
+            <div id="{{ buy_id }}" {{ block.shopify_attributes }}>
+              <form method="post" action="{{ routes.cart_add_url }}" id="{{ form_id }}" accept-charset="UTF-8" enctype="multipart/form-data" data-product-form novalidate>
+                <input type="hidden" name="form_type" value="product">
+                <input type="hidden" name="utf8" value="✓">
+                <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id-input>
+                <div class="buy-row">
+                  {%- if block.settings.show_quantity -%}
+                    <div class="quantity">
+                      <button type="button" data-qty-step="-1" aria-label="Diminuir quantidade">–</button>
+                      <input type="number" name="quantity" value="1" min="1" aria-label="Quantidade">
+                      <button type="button" data-qty-step="1" aria-label="Aumentar quantidade">+</button>
+                    </div>
+                  {%- endif -%}
+                  <button type="submit" class="button" data-add-button data-default-label="{{ block.settings.label | escape }}" {% unless current_variant.available %}disabled{% endunless %}>
+                    <span data-add-label>
+                      {%- if current_variant.available -%}{{ block.settings.label }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+                    </span>
+                  </button>
+                </div>
+                <p class="form-message" data-form-message role="alert"></p>
+              </form>
+            </div>
+
+          {%- when 'cashback' -%}
+            {%- assign pct = block.settings.percent | default: settings.cashback_percent -%}
+            {%- if pct > 0 -%}
+              {%- assign cashback = current_variant.price | times: pct | divided_by: 100 -%}
+              <div class="cashback-note" data-cashback="{{ pct }}" {{ block.shopify_attributes }}>
+                {{ block.settings.prefix }} <strong data-cashback-amount>{{ cashback | money }}</strong> {{ block.settings.suffix }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'upsell' -%}
+            {%- liquid
+              assign ns = block.settings.metafield | split: '.' | first
+              assign key = block.settings.metafield | split: '.' | last
+              assign upsells = product.metafields[ns][key].value
+              if upsells == blank and block.settings.collection != blank
+                assign upsells = block.settings.collection.products
+              endif
+            -%}
+            {%- if upsells != blank -%}
+              <div {{ block.shopify_attributes }}>
+                <p class="product__label">{{ block.settings.heading }}</p>
+                <div class="upsell__list">
+                  {%- for item in upsells limit: block.settings.limit -%}
+                    {%- if item.id != product.id and item.available -%}
+                      {%- assign v = item.selected_or_first_available_variant -%}
+                      <div class="upsell-item">
+                        <a href="{{ item.url }}" class="upsell-item__media">
+                          {%- if item.featured_media -%}{{ item.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}{%- endif -%}
+                        </a>
+                        <div>
+                          <p class="upsell-item__title"><a href="{{ item.url }}">{{ item.title }}</a></p>
+                          {% render 'price', product: item, show_installments: false %}
+                        </div>
+                        {%- if item.has_only_default_variant -%}
+                          <button type="button" class="button button--primary button--small" data-quick-add="{{ v.id }}">Adicionar</button>
+                        {%- else -%}
+                          <a href="{{ item.url }}" class="button button--primary button--small">Ver</a>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+
+          {%- when 'trust' -%}
+            <div class="trust-row" {{ block.shopify_attributes }}>
+              {%- if block.settings.item_1 != blank -%}<span>{% render 'icon', name: 'truck' %}{{ block.settings.item_1 }}</span>{%- endif -%}
+              {%- if block.settings.item_2 != blank -%}<span>{% render 'icon', name: 'shield' %}{{ block.settings.item_2 }}</span>{%- endif -%}
+              {%- if block.settings.item_3 != blank -%}<span>{% render 'icon', name: 'refresh' %}{{ block.settings.item_3 }}</span>{%- endif -%}
+            </div>
+
+          {%- when 'collapsible' -%}
+            {%- liquid
+              assign content = block.settings.content
+              if block.settings.page != blank
+                assign content = block.settings.page.content
+              endif
+              if block.settings.metafield != blank
+                assign ns = block.settings.metafield | split: '.' | first
+                assign key = block.settings.metafield | split: '.' | last
+                assign mf = product.metafields[ns][key]
+                if mf != blank
+                  assign content = mf | metafield_tag
+                endif
+              endif
+            -%}
+            {%- if content != blank -%}
+              <div class="product-tabs" {{ block.shopify_attributes }}>
+                <details {% if block.settings.open %}open{% endif %}>
+                  <summary>{{ block.settings.heading }}</summary>
+                  <div class="rte">{{ content }}</div>
+                </details>
+              </div>
+            {%- endif -%}
+          {%- when '@app' -%}
+            {% render block %}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- if section.settings.sticky_cta -%}
+  <div class="sticky-cta" data-sticky-cta data-anchor="{{ buy_id }}">
+    <div class="page-width sticky-cta__inner">
+      <div class="sticky-cta__media">
+        {%- if product.featured_media -%}{{ product.featured_media | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}{%- endif -%}
+      </div>
+      <p class="sticky-cta__title">{{ product.title }}</p>
+      {% render 'price', product: product, variant: current_variant, show_installments: false, dynamic: true %}
+      <button type="button" class="button" data-sticky-submit="{{ form_id }}" data-add-button data-default-label="Comprar" {% unless current_variant.available %}disabled{% endunless %}>
+        {%- if current_variant.available -%}Comprar{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+      </button>
+    </div>
+  </div>
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ request.origin | append: product.url | json }},
+    {%- if product.featured_media -%}
+      "image": [{{ product.featured_media | image_url: width: 1200 | prepend: 'https:' | json }}],
+    {%- endif -%}
+    "description": {{ product.description | strip_html | json }},
+    {%- if current_variant.sku != blank -%}"sku": {{ current_variant.sku | json }},{%- endif -%}
+    "brand": { "@type": "Brand", "name": {{ product.vendor | json }} },
+    "offers": [
+      {%- for variant in product.variants -%}
+        {
+          "@type": "Offer",
+          {%- if variant.sku != blank -%}"sku": {{ variant.sku | json }},{%- endif -%}
+          "availability": "http://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "price": {{ variant.price | divided_by: 100.00 | json }},
+          "priceCurrency": {{ cart.currency.iso_code | json }},
+          "url": {{ request.origin | append: variant.url | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Produto",
+  "tag": "section",
+  "class": "section-main-product",
+  "settings": [
+    { "type": "checkbox", "id": "sticky_cta", "label": "Barra fixa de compra ao rolar", "default": true }
+  ],
+  "blocks": [
+    { "type": "title", "name": "Título", "limit": 1, "settings": [] },
+    { "type": "rating", "name": "Avaliação", "limit": 1, "settings": [ { "type": "paragraph", "content": "Usa o metafield padrão reviews.rating, preenchido por apps de avaliação." } ] },
+    { "type": "description", "name": "Descrição", "limit": 1, "settings": [] },
+    { "type": "text", "name": "Texto", "settings": [ { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Texto livre</p>" } ] },
+    { "type": "price", "name": "Preço", "limit": 1, "settings": [] },
+    { "type": "variant_picker", "name": "Seletor de variantes", "limit": 1, "settings": [] },
+    {
+      "type": "siblings",
+      "name": "Produtos irmãos",
+      "settings": [
+        { "type": "paragraph", "content": "Liga produtos separados como se fossem variantes (ex.: outros sabores ou tamanhos). Crie um metafield de produto do tipo lista de produtos e inclua o próprio produto na lista. O nome mostrado vem do metafield custom.rotulo_variacao (texto) ou do título." },
+        { "type": "text", "id": "heading", "label": "Título", "default": "Outros sabores" },
+        { "type": "text", "id": "metafield", "label": "Metafield (namespace.chave)", "default": "custom.outros_sabores" },
+        { "type": "select", "id": "style", "label": "Estilo", "default": "images", "options": [ { "value": "images", "label": "Com imagem" }, { "value": "pills", "label": "Botões de texto" } ] }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Botão de compra",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Texto do botão", "default": "Adicionar" },
+        { "type": "checkbox", "id": "show_quantity", "label": "Mostrar quantidade", "default": true }
+      ]
+    },
+    {
+      "type": "cashback",
+      "name": "Cashback",
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "percent", "label": "Percentual", "min": 0, "max": 30, "step": 1, "unit": "%", "default": 10 },
+        { "type": "text", "id": "prefix", "label": "Texto antes do valor", "default": "Receba de volta" },
+        { "type": "text", "id": "suffix", "label": "Texto depois do valor", "default": "para a próxima compra" }
+      ]
+    },
+    {
+      "type": "upsell",
+      "name": "Leve junto",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "Leve junto" },
+        { "type": "text", "id": "metafield", "label": "Metafield de produtos (namespace.chave)", "default": "custom.leve_junto" },
+        { "type": "collection", "id": "collection", "label": "Coleção reserva", "info": "Usada quando o produto não tem o metafield preenchido." },
+        { "type": "range", "id": "limit", "label": "Quantidade", "min": 1, "max": 4, "step": 1, "default": 2 }
+      ]
+    },
+    {
+      "type": "trust",
+      "name": "Selos de confiança",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "item_1", "label": "Item 1", "default": "Envio em até 2 dias úteis" },
+        { "type": "text", "id": "item_2", "label": "Item 2", "default": "Compra segura" },
+        { "type": "text", "id": "item_3", "label": "Item 3", "default": "Troca fácil" }
+      ]
+    },
+    {
+      "type": "collapsible",
+      "name": "Aba recolhível",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Título", "default": "Tabela nutricional" },
+        { "type": "richtext", "id": "content", "label": "Conteúdo" },
+        { "type": "page", "id": "page", "label": "Ou conteúdo de uma página" },
+        { "type": "text", "id": "metafield", "label": "Ou metafield do produto (namespace.chave)", "info": "Ex.: custom.tabela_nutricional. Tem prioridade sobre os outros." },
+        { "type": "checkbox", "id": "open", "label": "Começar aberta", "default": false }
+      ]
+    },
+    {
+      "type": "highlight",
+      "name": "Destaque (abaixo da foto)",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "value", "label": "Valor", "default": "14g" },
+        { "type": "text", "id": "label", "label": "Legenda", "default": "Proteína" }
+      ]
+    },
+    { "type": "@app" }
+  ]
+}
+{% endschema %}

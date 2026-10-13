@@ -1,0 +1,34 @@
+<div id="CartDrawer" class="drawer drawer--right cart-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Carrinho">
+  <button type="button" class="drawer__overlay" data-drawer-close aria-label="Fechar carrinho" tabindex="-1"></button>
+  <div class="drawer__panel" data-cart-root>
+    <div class="drawer__header">
+      <h2>Seu carrinho{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</h2>
+      <button type="button" class="icon-button" data-drawer-close aria-label="Fechar">{% render 'icon', name: 'close' %}</button>
+    </div>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="drawer__body">
+        {% render 'free-shipping' %}
+        <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm" novalidate>
+          {% render 'cart-items' %}
+        </form>
+      </div>
+      <div class="drawer__footer">
+        {% render 'cart-totals', form_id: 'CartDrawerForm' %}
+      </div>
+    {%- else -%}
+      <div class="drawer__body cart-empty">
+        <h3>Seu carrinho está vazio</h3>
+        <p>Que tal dar uma olhada nos mais vendidos?</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button">Ver produtos</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Carrinho lateral",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,20 @@
+{
+  "type": "header",
+  "name": "Cabeçalho",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "blocks": {
+        "msg-1": { "type": "message", "settings": { "text": "Frete grátis acima de R$ 200", "link": "" } },
+        "msg-2": { "type": "message", "settings": { "text": "Parcele em até 3x sem juros", "link": "" } }
+      },
+      "block_order": ["msg-1", "msg-2"],
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "settings": {}
+    }
+  },
+  "order": ["announcement", "header"]
+}

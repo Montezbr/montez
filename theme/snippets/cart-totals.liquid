@@ -1,0 +1,23 @@
+<div class="cart-totals">
+  {%- if cart.cart_level_discount_applications.size > 0 -%}
+    <div class="cart-totals__row">
+      <span>Subtotal</span>
+      <span>{{ cart.items_subtotal_price | money }}</span>
+    </div>
+    {%- for discount in cart.cart_level_discount_applications -%}
+      <div class="cart-totals__row cart-totals__row--discount">
+        <span>{{ discount.title }}</span>
+        <span>- {{ discount.total_allocated_amount | money }}</span>
+      </div>
+    {%- endfor -%}
+  {%- endif -%}
+  <div class="cart-totals__row cart-totals__row--total">
+    <span>Total</span>
+    <span>{{ cart.total_price | money }}</span>
+  </div>
+  <p class="text-muted" style="font-size:.8rem;margin:0">Frete e cupons calculados no checkout.</p>
+</div>
+<button type="submit" name="checkout" form="{{ form_id | default: 'CartForm' }}" class="button button--full">Finalizar compra</button>
+{%- if settings.cart_note_text != blank -%}
+  <p class="cart-note">{{ settings.cart_note_text }}</p>
+{%- endif -%}

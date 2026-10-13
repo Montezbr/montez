@@ -1,0 +1,16 @@
+{
+  "type": "footer",
+  "name": "Rodapé",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "links-1": { "type": "links", "settings": { "heading": "Institucional", "menu": "footer" } },
+        "text-1": { "type": "text", "settings": { "heading": "Atendimento", "text": "<p>Seg a sex, 9h às 18h</p>" } }
+      },
+      "block_order": ["links-1", "text-1"],
+      "settings": {}
+    }
+  },
+  "order": ["footer"]
+}

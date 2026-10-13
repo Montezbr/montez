@@ -1,0 +1,67 @@
+{%- capture items -%}
+  {%- for block in section.blocks -%}
+    <span class="marquee__item" {{ block.shopify_attributes }}>
+      {%- if block.settings.icon != 'none' -%}{% render 'icon', name: block.settings.icon %}{%- endif -%}
+      <span>{{ block.settings.text }}</span>
+    </span>
+  {%- endfor -%}
+{%- endcapture -%}
+<div class="section{% unless section.settings.full_width %} page-width{% endunless %}" style="--section-pt: {{ section.settings.pt }}px; --section-pb: {{ section.settings.pb }}px">
+  <div
+    class="marquee"
+    style="--marquee-bg: {{ section.settings.bg }}; --marquee-fg: {{ section.settings.fg }}; --marquee-speed: {{ section.settings.speed }}s; --marquee-radius: {% if section.settings.full_width %}0{% else %}var(--radius-card){% endif %}"
+  >
+    <div class="marquee__inner">
+      {%- for i in (1..4) -%}
+        <div class="marquee__group" {% unless forloop.first %}aria-hidden="true"{% endunless %}>{{ items }}</div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Faixa rolante",
+  "tag": "section",
+  "class": "section-marquee",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "color", "id": "bg", "label": "Fundo", "default": "#00A0B1" },
+    { "type": "color", "id": "fg", "label": "Texto", "default": "#FFFFFF" },
+    { "type": "range", "id": "speed", "label": "Duração do ciclo", "min": 10, "max": 80, "step": 5, "unit": "s", "default": 35, "info": "Maior = mais devagar" },
+    { "type": "checkbox", "id": "full_width", "label": "Largura total", "default": false },
+    { "type": "range", "id": "pt", "label": "Espaço acima", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "pb", "label": "Espaço abaixo", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "inline_richtext", "id": "text", "label": "Texto", "default": "<strong>Frete grátis</strong> acima de R$ 200" },
+        { "type": "select", "id": "icon", "label": "Ícone", "default": "truck",
+          "options": [
+            { "value": "none", "label": "Nenhum" },
+            { "value": "truck", "label": "Caminhão" },
+            { "value": "coin", "label": "Moeda" },
+            { "value": "gift", "label": "Presente" },
+            { "value": "shield", "label": "Escudo" },
+            { "value": "refresh", "label": "Troca" },
+            { "value": "star", "label": "Estrela" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Faixa rolante",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item", "settings": { "text": "<strong>10% de cashback</strong> para a próxima compra", "icon": "coin" } },
+        { "type": "item", "settings": { "text": "<strong>Troca fácil</strong> em até 7 dias", "icon": "refresh" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

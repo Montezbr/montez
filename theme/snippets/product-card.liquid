@@ -1,0 +1,71 @@
+{%- comment -%}
+  Card de produto.
+  - product_card_product: produto
+  - show_quick_add: padrão true
+  Selos extras: adicione a tag "selo:Texto" ao produto (ex.: selo:Novo sabor).
+{%- endcomment -%}
+{%- liquid
+  assign p = product_card_product
+  assign variant = p.selected_or_first_available_variant
+  assign ratio_class = ''
+  if settings.card_image_ratio == 'portrait'
+    assign ratio_class = ' card__media--portrait'
+  endif
+  assign savings = 0
+  if p.compare_at_price_min > p.price_min
+    assign savings = p.compare_at_price_min | minus: p.price_min
+  endif
+-%}
+<div class="card">
+  <a href="{{ p.url }}" class="card__media{{ ratio_class }}" aria-label="{{ p.title | escape }}">
+    <div class="card__badges">
+      {%- for tag in p.tags -%}
+        {%- if tag contains 'selo:' -%}
+          <span class="badge badge--accent">{{ tag | remove_first: 'selo:' | strip }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- unless p.available -%}
+        <span class="badge badge--soft">{{ 'products.product.sold_out' | t }}</span>
+      {%- endunless -%}
+    </div>
+    {%- if p.featured_media -%}
+      {{ p.featured_media | image_url: width: 700 | image_tag:
+        loading: 'lazy',
+        sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+        widths: '250, 350, 500, 700',
+        class: 'card__image-main',
+        alt: p.featured_media.alt | default: p.title
+      }}
+      {%- if p.media[1] -%}
+        {{ p.media[1] | image_url: width: 700 | image_tag:
+          loading: 'lazy',
+          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+          widths: '250, 350, 500, 700',
+          class: 'card__image-hover',
+          alt: ''
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  </a>
+
+  <div class="card__content">
+    <h3 class="card__title"><a href="{{ p.url }}">{{ p.title }}</a></h3>
+    {%- if settings.show_savings_badge and savings > 0 -%}
+      <span><span class="badge badge--success">Economize {{ savings | money }}</span></span>
+    {%- endif -%}
+    <div class="card__footer">
+      {% render 'price', product: p %}
+      {%- if show_quick_add != false -%}
+        {%- if p.available and p.has_only_default_variant -%}
+          <button type="button" class="button button--small card__quick-add" data-quick-add="{{ variant.id }}">
+            Comprar {% render 'icon', name: 'cart' %}
+          </button>
+        {%- elsif p.available -%}
+          <a href="{{ p.url }}" class="button button--small card__quick-add">Comprar</a>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

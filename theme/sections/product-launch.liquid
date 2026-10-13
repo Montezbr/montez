@@ -1,0 +1,84 @@
+<div class="section" style="--section-pt: {{ section.settings.pt }}px; --section-pb: {{ section.settings.pb }}px">
+  <div class="page-width launch" data-launch {% if settings.animations %}data-reveal{% endif %}>
+    <div class="launch__copy">
+      {%- if section.settings.badge != blank -%}<span class="badge badge--accent">{{ section.settings.badge }}</span>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.text != blank -%}<div class="rte text-muted">{{ section.settings.text }}</div>{%- endif -%}
+
+      {%- if section.blocks.size > 1 -%}
+        <div class="launch__switch" role="group" aria-label="Versões">
+          {%- for block in section.blocks -%}
+            <button type="button" data-launch-tab="{{ block.id }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" {{ block.shopify_attributes }}>
+              <strong>{{ block.settings.label }}</strong>
+              <span>{{ block.settings.sublabel }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div>
+      {%- for block in section.blocks -%}
+        {%- assign product = block.settings.product -%}
+        <div class="launch__product" data-launch-panel="{{ block.id }}" {% unless forloop.first %}hidden{% endunless %}>
+          {%- if product != blank -%}
+            <a href="{{ product.url }}">
+              {%- assign img = block.settings.image | default: product.featured_media -%}
+              {%- if img -%}
+                {{ img | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(min-width: 750px) 45vw, 90vw', alt: product.title }}
+              {%- endif -%}
+            </a>
+            <h3>{{ product.title }}</h3>
+            {% render 'price', product: product, show_installments: false %}
+            {%- if product.available and product.has_only_default_variant -%}
+              <button type="button" class="button button--primary" data-quick-add="{{ product.selected_or_first_available_variant.id }}">{{ section.settings.button_label }}</button>
+            {%- else -%}
+              <a href="{{ product.url }}" class="button button--primary">{{ section.settings.button_label }}</a>
+            {%- endif -%}
+          {%- else -%}
+            <div style="aspect-ratio:1/1;max-width:360px;margin:0 auto 1rem">{{ 'product-2' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+            <h3>Escolha um produto</h3>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lançamento",
+  "tag": "section",
+  "class": "section-launch",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Selo", "default": "Novo sabor" },
+    { "type": "text", "id": "heading", "label": "Título", "default": "Chegou em duas versões" },
+    { "type": "richtext", "id": "text", "label": "Texto", "default": "<p>Escolha a que combina com a sua rotina.</p>" },
+    { "type": "text", "id": "button_label", "label": "Texto do botão", "default": "Eu quero" },
+    { "type": "range", "id": "pt", "label": "Espaço acima", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "pb", "label": "Espaço abaixo", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "blocks": [
+    {
+      "type": "version",
+      "name": "Versão",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Produto" },
+        { "type": "image_picker", "id": "image", "label": "Imagem (vazio = imagem do produto)" },
+        { "type": "text", "id": "label", "label": "Rótulo grande", "default": "14g" },
+        { "type": "text", "id": "sublabel", "label": "Rótulo pequeno", "default": "leve e crocante" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lançamento",
+      "blocks": [
+        { "type": "version" },
+        { "type": "version", "settings": { "label": "21g", "sublabel": "mais proteína" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

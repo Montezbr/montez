@@ -1,0 +1,15 @@
+<article class="section page-width" style="--section-pt: 32px; --section-pb: 56px">
+  <div class="main-page">
+    <p class="blog-card__date">{{ article.published_at | date: '%d/%m/%Y' }} · {{ article.author }}</p>
+    <h1>{{ article.title }}</h1>
+    {%- if article.image -%}
+      {{ article.image | image_url: width: 1600 | image_tag: widths: '600, 900, 1200, 1600', sizes: '(min-width: 820px) 820px, 100vw', alt: article.title, style: 'border-radius: var(--radius-card); margin-bottom: 2rem' }}
+    {%- endif -%}
+    <div class="rte">{{ article.content }}</div>
+    <p style="margin-top:2rem"><a href="{{ blog.url }}" class="link-arrow">← Voltar para {{ blog.title }}</a></p>
+  </div>
+</article>
+
+{% schema %}
+{ "name": "Post do blog", "tag": "section", "settings": [] }
+{% endschema %}

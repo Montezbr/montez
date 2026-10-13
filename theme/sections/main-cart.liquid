@@ -1,0 +1,38 @@
+<div class="section page-width" data-cart-section="{{ section.id }}">
+  <div data-cart-root>
+    <h1 class="h2">Seu carrinho</h1>
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-page">
+        <div>
+          {% render 'free-shipping' %}
+          <form action="{{ routes.cart_url }}" method="post" id="CartForm" novalidate>
+            {% render 'cart-items' %}
+            {%- if section.settings.show_note -%}
+              <div class="field" style="margin-top:2rem">
+                <label for="CartNote">Observações do pedido</label>
+                <textarea id="CartNote" name="note" rows="3">{{ cart.note }}</textarea>
+              </div>
+            {%- endif -%}
+          </form>
+        </div>
+        <aside class="cart-page__summary">
+          {% render 'cart-totals' %}
+        </aside>
+      </div>
+    {%- else -%}
+      <div class="empty-state">
+        <p>Seu carrinho está vazio.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button">Continuar comprando</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Carrinho",
+  "settings": [
+    { "type": "checkbox", "id": "show_note", "label": "Mostrar campo de observações", "default": false }
+  ]
+}
+{% endschema %}
